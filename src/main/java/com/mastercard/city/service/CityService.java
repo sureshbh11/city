@@ -1,3 +1,10 @@
+/*
+ *
+ * @author: Suresh Bhaskaran
+ *
+ * $Id$
+ *
+ */
 package com.mastercard.city.service;
 
 import java.util.HashMap;
@@ -18,7 +25,7 @@ public class CityService {
 	private Map<String, Set<String>> theMap;
 
 	/**
-	 * init
+	 * init: Make a HashMap with key as city and set of cities that can be reached
 	 */
 	public void init() {
 		for(String city:cities) {
@@ -59,8 +66,9 @@ public class CityService {
 			return destination+ " Not Found"; 
 		}
 		
+		Set<String> alreadyTested = new HashSet<>();
 		Set<String> testFurther = new HashSet<>();
-		return testConnectivity(origin, origin, destination, testFurther);
+		return testConnectivity(origin, origin, destination, alreadyTested, testFurther);
 	}
 
 	/**
@@ -68,26 +76,31 @@ public class CityService {
 	 * @param destination
 	 * @return
 	 */
-	private String testConnectivity(String origin, String from, String destination, Set<String> testFurther) {
+	private String testConnectivity(String origin, String from, String destination, Set<String> alreadyTested, Set<String> testFurther) {
 		
 		Set<String> toSet = theMap.get(from);
 		for(String city:toSet) {
+			if(alreadyTested.contains(city)) {
+				continue;
+			}
 			if(city.equals(destination)) {
 				return "yes";
 			}else if(!city.equals(origin)){
 				testFurther.add(city);
 			}
+			alreadyTested.add(city);
 		}
 		
 		for(String city:testFurther) {
 			testFurther.remove(city);
-			return testConnectivity(origin, city, destination, testFurther);
+			return testConnectivity(origin, city, destination, alreadyTested, testFurther);
 		}
 		
 		return "no";
 	}
 	
 	/**
+	 * init: Make a HashMap with key as city and set of cities that can be reached
 	 * @param from
 	 * @param to
 	 * @param theMap
